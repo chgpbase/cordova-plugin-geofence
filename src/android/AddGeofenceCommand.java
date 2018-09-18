@@ -52,10 +52,11 @@ public class AddGeofenceCommand extends AbstractGoogleServiceCommand{
     public void ExecuteCustomCode() {
         // TODO Auto-generated method stub
         logger.log(Log.DEBUG, "Adding new geofences");
-        try {
-            GeofencingRequest geofencingRequest = new GeofencingRequest.Builder()
+
+         GeofencingRequest geofencingRequest = new GeofencingRequest.Builder()
                     .addGeofences(geofencesToAdd)
                     .build();
+        try {
             LocationServices.GeofencingApi
                     .addGeofences(mGoogleApiClient, geofencingRequest, pendingIntent)
                     .setResultCallback(new ResultCallback<Status>() {
