@@ -11,6 +11,8 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.PermissionHelper;
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -128,7 +130,7 @@ public class GeofencePlugin extends CordovaPlugin {
                     .getWatched();
             callbackContext.success(Gson.get().toJson(geoNotifications));
         } else if (action.equals("initialize")) {
-            callbackContext.success();
+            initialize(callbackContext);
         } else if (action.equals("deviceReady")) {
             deviceReady();
             callbackContext.success();
@@ -177,6 +179,47 @@ public class GeofencePlugin extends CordovaPlugin {
                 webView.sendJavascript(js);
                 launcherIntent.removeExtra("geofence.notification.data");
             }
+        }
+    }
+
+    private void initialize(CallbackContext callbackContext) {
+        String[] permissions = {
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+        };
+
+        if (!hasPermissions(permissions)) {
+            PermissionHelper.requestPermissions(this, 0, permissions);
+        } else {
+            callbackContext.success();
+        }
+    }
+
+    private boolean hasPermissions(String[] permissions) {
+        for (String permission : permissions) {
+            if (!PermissionHelper.hasPermission(this, permission)) return false;
+        }
+
+        return true;
+    }
+
+    public void onRequestPermissionResult(int requestCode, String[] permissions,
+                                          int[] grantResults) throws JSONException {
+        PluginResult result;
+
+        if (executedAction != null) {
+            for (int r:grantResults) {
+                if (r == PackageManager.PERMISSION_DENIED) {
+                    Log.d(TAG, "Permission Denied!");
+                    result = new PluginResult(PluginResult.Status.ILLEGAL_ACCESS_EXCEPTION);
+                    executedAction.callbackContext.sendPluginResult(result);
+                    executedAction = null;
+                    return;
+                }
+            }
+            Log.d(TAG, "Permission Granted!");
+            execute(executedAction);
+            executedAction = null;
         }
     }
 }
