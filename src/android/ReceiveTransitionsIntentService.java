@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
 public class ReceiveTransitionsIntentService extends IntentService {
@@ -57,16 +58,16 @@ public class ReceiveTransitionsIntentService extends IntentService {
     }
 
     /*
-    *
-    * */
+     *
+     * */
     private class CallbackBroadcastReceiver extends BroadcastReceiver {
 
         private Context context = null;
         private GeoNotificationNotifier notifier;
         private Intent googleTransitionIntent;
         /*
-        *  Broadcast Intent to be sent to the application.
-        */
+         *  Broadcast Intent to be sent to the application.
+         */
         private Intent broadcastIntent;
 
         public CallbackBroadcastReceiver(Context context, final Intent broadcastIntent, final Intent GoogleTransitionIntent) {
@@ -174,43 +175,119 @@ public class ReceiveTransitionsIntentService extends IntentService {
     private boolean validateTimeInterval(GeoNotification geoNotification){
         final Logger logger = Logger.getLogger();
         boolean showNotification = false;
+        if (geoNotification==null) {
+            logger.log(Log.DEBUG, "validateTimeInterval - ERROR!!! GET null geoNotification");
+            return showNotification;
+        }
+        logger.log(Log.DEBUG, "validateTimeInterval - start("+ geoNotification.notification.text +")");
         //Validate if the Geofence has an interval of time to show notification
         String timestampStart = geoNotification.notification.dateStart;
         String timestampEnd = geoNotification.notification.dateEnd;
         boolean happensOnce = geoNotification.notification.happensOnce;
+        String timedayStart = geoNotification.notification.timeStart;
+        String timedayEnd = geoNotification.notification.timeEnd;
+        int scenarioDay = geoNotification.notification.scenarioDayType;
         boolean notificationShowed = geoNotification.notification.notificationShowed;
 
         if(notificationShowed && happensOnce){
             showNotification = false;
             return showNotification;
         }
-
-        if((timestampStart == null || timestampStart == "") && (timestampEnd == null || timestampEnd == "")) {
+        logger.log(Log.DEBUG, "validateTimeInterval - scenarioDay="+Integer.toString(scenarioDay));
+        if(scenarioDay==1 || scenarioDay==0) {
+            logger.log(Log.DEBUG, "validateTimeInterval - scenarioDay(1)");
             showNotification = true;
         } else {
             Date dateNow = new Date();
             DateFormat formatter ;
             Date dateStart = null;
             Date dateEnd = null;
-            //formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            try {
-                dateStart = formatter.parse(timestampStart);
-            } catch (ParseException e) {
-                logger.log(Log.ERROR, e.toString());
+            if (scenarioDay==2) {
+                //BETWEEN_TWO_DATES
+                logger.log(Log.DEBUG, "validateTimeInterval - scenarioDay(2)-BETWEEN_TWO_DATES");
+
+                //formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                try {
+                    dateStart = formatter.parse(timestampStart);
+                } catch (ParseException e) {
+                    logger.log(Log.ERROR, e.toString());
+                }
+
+                try {
+                    dateEnd = formatter.parse(timestampEnd);
+                } catch (ParseException e) {
+                    logger.log(Log.ERROR, e.toString());
+                }
+
+                if (dateStart.equals(dateEnd) || dateStart.after(dateEnd)) {
+                    dateEnd = new Date();
+                }
+
+                showNotification = dateIsBetweenIntervalDate(dateNow, dateStart, dateEnd);
+            } else {
+                logger.log(Log.DEBUG, "validateTimeInterval - scenarioDay(>2)");
+                Calendar calendar = Calendar.getInstance();
+                int day = calendar.get(Calendar.DAY_OF_WEEK);
+                logger.log(Log.DEBUG, "validateTimeInterval - CHECK day of week:  " + Integer.toString(day));
+                //SATURDAY_AND_SUNDAY
+                if  ((scenarioDay==3) && (day>=Calendar.SUNDAY || day<=Calendar.SATURDAY)) {
+                    logger.log(Log.DEBUG, "validateTimeInterval - scenarioDay(3)-SATURDAY_AND_SUNDAY");
+                    showNotification = true;
+                }
+                //FRIDAY_AND_SATURDAY
+                if  ((scenarioDay==4) && (day>=Calendar.FRIDAY || day<=Calendar.SATURDAY)) {
+                    logger.log(Log.DEBUG, "validateTimeInterval - scenarioDay(4)-FRIDAY_AND_SATURDAY NOW="+Integer.toString(day)+" FRIDAY="+ Integer.toString(Calendar.FRIDAY)+" SATURDAY="+ Integer.toString(Calendar.SATURDAY));
+                    showNotification = true;
+                }
+                //MONDAY_TO_FRIDAY
+                if  ((scenarioDay==5) && (day>=Calendar.MONDAY && day<=Calendar.FRIDAY)) {
+                    logger.log(Log.DEBUG, "validateTimeInterval - scenarioDay(5)-MONDAY_AND_SATURDAY NOW="+Integer.toString(day)+" MONDAY="+ Integer.toString(Calendar.MONDAY)+" FRIDAY="+ Integer.toString(Calendar.FRIDAY));
+                    showNotification = true;
+                }
+                //SUNDAY_TO_TUESDAY
+                if  ((scenarioDay==6) && (day>=Calendar.SUNDAY && day<=Calendar.TUESDAY)) {
+                    logger.log(Log.DEBUG, "validateTimeInterval - scenarioDay(6)-SUNDAY_TO_TUESDAY");
+                    showNotification = true;
+
+                }
+                if (scenarioDay>6) logger.log(Log.DEBUG, "validateTimeInterval - scenarioDay(>6)");
+                if  ((scenarioDay==7) && (day==Calendar.MONDAY)) showNotification = true;
+                if  ((scenarioDay==8) && (day==Calendar.TUESDAY)) showNotification = true;
+                if  ((scenarioDay==9) && (day==Calendar.WEDNESDAY)) showNotification = true;
+                if  ((scenarioDay==10) && (day==Calendar.THURSDAY)) showNotification = true;
+                if  ((scenarioDay==11) && (day==Calendar.FRIDAY)) showNotification = true;
+                if  ((scenarioDay==12) && (day==Calendar.SATURDAY)) showNotification = true;
+                if  ((scenarioDay==13) && (day==Calendar.SUNDAY)) showNotification = true;
+
             }
 
-            try {
-                dateEnd = formatter.parse(timestampEnd);
-            } catch (ParseException e) {
-                logger.log(Log.ERROR, e.toString());
-            }
+            if((timedayStart != null && timedayStart != "") && (timedayEnd != null && timedayEnd != "") && showNotification) {
+                logger.log(Log.DEBUG, "validateTimeInterval - scenarioTime");
+                DateFormat Dateformatter ;
+                Date timeMin = null;
+                Date timeMax = null;
+                Dateformatter = new SimpleDateFormat("yyyy-MM-dd");
+                formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                logger.log(Log.DEBUG, "validateTimeInterval - scenarioTime parse");
+                try {
+                    timeMin = formatter.parse(Dateformatter.format(dateNow)+' '+timedayStart);
+                } catch (ParseException e) {
+                    logger.log(Log.ERROR, e.toString());
+                }
 
-            if (dateStart.equals(dateEnd) || dateStart.after(dateEnd)) {
-                dateEnd = new Date();
-            }
+                try {
+                    timeMax = formatter.parse(Dateformatter.format(dateNow)+' '+timedayEnd);
+                } catch (ParseException e) {
+                    logger.log(Log.ERROR, e.toString());
+                }
 
-            showNotification = dateIsBetweenIntervalDate(dateNow, dateStart, dateEnd);
+                // if (timeMin.equals(dateEnd) || dateStart.after(dateEnd)) {
+                //     dateEnd = new Date();
+                // }
+                logger.log(Log.DEBUG, "validateTimeInterval - scenarioTime check");
+                showNotification = dateIsBetweenIntervalDate(dateNow, timeMin, timeMax);
+            }
 
             if(showNotification && !notificationShowed && happensOnce) {
                 geoNotification.notification.notificationShowed = true;
@@ -238,3 +315,4 @@ public class ReceiveTransitionsIntentService extends IntentService {
     }
 
 }
+
