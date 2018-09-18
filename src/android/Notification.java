@@ -20,6 +20,9 @@ public class Notification {
     @Expose public boolean openAppOnClick;
     @Expose public String dateStart;
     @Expose public String dateEnd;
+    @Expose public String timeStart;
+    @Expose public String timeEnd;
+    @Expose public int scenarioDayType;
     @Expose public String deeplink;
     @Expose public boolean happensOnce;
     @Expose public boolean notificationShowed = false;
