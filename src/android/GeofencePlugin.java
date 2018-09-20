@@ -158,8 +158,6 @@ public class GeofencePlugin extends CordovaPlugin {
         } else if (action.equals("deviceReady")) {
             deviceReady();
             callbackContext.success();
-        } else {
-            return false;
         }
            }
         });
