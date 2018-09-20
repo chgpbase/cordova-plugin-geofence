@@ -124,8 +124,8 @@ public class GeofencePlugin extends CordovaPlugin {
     }
 
     @Override
-    public boolean execute(String action, JSONArray args,
-            CallbackContext callbackContext) throws JSONException {
+    public boolean execute(final String action, final JSONArray args,
+            final CallbackContext callbackContext) throws JSONException {
         Log.d(TAG, "GeofencePlugin execute action: " + action + " args: "
                 + args.toString());
         
@@ -135,7 +135,7 @@ public class GeofencePlugin extends CordovaPlugin {
         if (action.equals("addOrUpdate")) {
             List<GeoNotification> geoNotifications = new ArrayList<GeoNotification>();
             for (int i = 0; i < args.length(); i++) {
-                GeoNotification not = parseFromJSONObject(args.getJSONObject(i));
+                GeoNotification not = parseFromJSONObject(args.optJSONObject(i));
                 if (not != null) {
                     geoNotifications.add(not);
                 }
@@ -145,7 +145,7 @@ public class GeofencePlugin extends CordovaPlugin {
         } else if (action.equals("remove")) {
             List<String> ids = new ArrayList<String>();
             for (int i = 0; i < args.length(); i++) {
-                ids.add(args.getString(i));
+                ids.add(args.optString(i));
             }
             geoNotificationManager.removeGeoNotifications(ids, callbackContext);
         } else if (action.equals("removeAll")) {
