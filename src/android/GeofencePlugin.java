@@ -124,18 +124,18 @@ public class GeofencePlugin extends CordovaPlugin {
     }
 
     @Override
-    public boolean execute(final String action, final JSONArray args,
-            final CallbackContext callbackContext) throws JSONException {
+    public boolean execute(String action, JSONArray args,
+            CallbackContext callbackContext) throws JSONException {
         Log.d(TAG, "GeofencePlugin execute action: " + action + " args: "
                 + args.toString());
         
-        executedAction = new Action(action, args, callbackContext);
-        cordova.getThreadPool().execute(new Runnable() {
-	    public void run() {
+      //  executedAction = new Action(action, args, callbackContext);
+      //  cordova.getThreadPool().execute(new Runnable() {
+//	    public void run() {
         if (action.equals("addOrUpdate")) {
             List<GeoNotification> geoNotifications = new ArrayList<GeoNotification>();
             for (int i = 0; i < args.length(); i++) {
-                GeoNotification not = parseFromJSONObject(args.optJSONObject(i));
+                GeoNotification not = parseFromJSONObject(args.getJSONObject(i));
                 if (not != null) {
                     geoNotifications.add(not);
                 }
@@ -145,7 +145,7 @@ public class GeofencePlugin extends CordovaPlugin {
         } else if (action.equals("remove")) {
             List<String> ids = new ArrayList<String>();
             for (int i = 0; i < args.length(); i++) {
-                ids.add(args.optString(i));
+                ids.add(args.getString(i));
             }
             geoNotificationManager.removeGeoNotifications(ids, callbackContext);
         } else if (action.equals("removeAll")) {
@@ -159,10 +159,12 @@ public class GeofencePlugin extends CordovaPlugin {
         } else if (action.equals("deviceReady")) {
             deviceReady();
             callbackContext.success();
-        }
-           }
-        });
-        return true;
+        } else {
+	    return true;
+	}
+      ///     }
+      ///  });
+     //   return true;
     }
 
     public boolean execute(Action action) throws JSONException {
