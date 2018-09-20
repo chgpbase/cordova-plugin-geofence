@@ -82,7 +82,7 @@ public class AddGeofenceCommand extends AbstractGoogleServiceCommand{
                         }
                     });
         } catch (Exception exception) {
-            logger.log(LOG.ERROR, "Exception while adding geofences");
+            logger.log(Log.ERROR, "Exception while adding geofences");
             exception.printStackTrace();
             CommandExecuted(false);
         }
