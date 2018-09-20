@@ -165,6 +165,10 @@ public class GeofencePlugin extends CordovaPlugin {
         return true;
     }
 
+    public boolean execute(Action action) throws JSONException {
+        return execute(action.action, action.args, action.callbackContext);
+    }
+	
     private GeoNotification parseFromJSONObject(JSONObject object) {
         GeoNotification geo = null;
         geo = GeoNotification.fromJson(object.toString());
