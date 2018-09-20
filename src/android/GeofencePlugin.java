@@ -128,7 +128,8 @@ public class GeofencePlugin extends CordovaPlugin {
                 + args.toString());
         
         executedAction = new Action(action, args, callbackContext);
-        
+        cordova.getThreadPool().execute(new Runnable() {
+	    public void run() {
         if (action.equals("addOrUpdate")) {
             List<GeoNotification> geoNotifications = new ArrayList<GeoNotification>();
             for (int i = 0; i < args.length(); i++) {
@@ -159,6 +160,8 @@ public class GeofencePlugin extends CordovaPlugin {
         } else {
             return false;
         }
+           }
+        });
         return true;
     }
 
