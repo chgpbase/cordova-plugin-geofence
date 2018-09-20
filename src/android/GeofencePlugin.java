@@ -164,7 +164,7 @@ public class GeofencePlugin extends CordovaPlugin {
 	}
       ///     }
       ///  });
-     //   return true;
+        return true;
     }
 
     public boolean execute(Action action) throws JSONException {
