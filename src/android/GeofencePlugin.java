@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.Manifest;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
