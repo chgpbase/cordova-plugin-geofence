@@ -22,11 +22,31 @@ import java.util.List;
 
 public class GeofencePlugin extends CordovaPlugin {
     public static final String TAG = "GeofencePlugin";
+    
+    public static final String ERROR_UNKNOWN = "UNKNOWN";
+    public static final String ERROR_PERMISSION_DENIED = "PERMISSION_DENIED";
+    public static final String ERROR_GEOFENCE_NOT_AVAILABLE = "GEOFENCE_NOT_AVAILABLE";
+    public static final String ERROR_GEOFENCE_LIMIT_EXCEEDED = "GEOFENCE_LIMIT_EXCEEDED";
+    
     private GeoNotificationManager geoNotificationManager;
     private Context context;
     protected static Boolean isInBackground = true;
     public static CordovaWebView webView = null;
+    
+   private class Action {
+        public String action;
+        public JSONArray args;
+        public CallbackContext callbackContext;
 
+        public Action(String action, JSONArray args, CallbackContext callbackContext) {
+            this.action = action;
+            this.args = args;
+            this.callbackContext = callbackContext;
+        }
+    }
+    
+    private Action executedAction;
+    
     private GeoNotificationBroadcastReceiver mReceiver = null;
 
     private class GeoNotificationBroadcastReceiver extends BroadcastReceiver
@@ -106,7 +126,9 @@ public class GeofencePlugin extends CordovaPlugin {
             CallbackContext callbackContext) throws JSONException {
         Log.d(TAG, "GeofencePlugin execute action: " + action + " args: "
                 + args.toString());
-
+        
+        executedAction = new Action(action, args, callbackContext);
+        
         if (action.equals("addOrUpdate")) {
             List<GeoNotification> geoNotifications = new ArrayList<GeoNotification>();
             for (int i = 0; i < args.length(); i++) {
