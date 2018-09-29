@@ -296,12 +296,13 @@ public class ReceiveTransitionsIntentService extends IntentService {
                 List<String> ids = new ArrayList<String>();
                 ids.add(geoNotification.id);
                 RemoveGeofenceCommand cmd = new RemoveGeofenceCommand(getApplicationContext(), ids);
-                cmd.addListener(new IGoogleServiceCommandListener() {
-                    @Override
-                    public void onCommandExecuted(boolean withSuccess) {
-                        logger.log(Log.DEBUG, "Geofence Removed");
-                    }
-                });
+//                cmd.addListener(new IGoogleServiceCommandListener() {
+//                    @Override
+//                    public void onCommandExecuted(boolean withSuccess) {
+//                        logger.log(Log.DEBUG, "Geofence Removed");
+//                    }
+//                });
+                cmd.addListener(new IGoogleServiceCommandListener());
                 GoogleServiceCommandExecutor googleServiceCommandExecutor = new GoogleServiceCommandExecutor();
                 googleServiceCommandExecutor.QueueToExecute(cmd);
             }
