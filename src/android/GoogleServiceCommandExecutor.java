@@ -29,7 +29,7 @@ public class GoogleServiceCommandExecutor implements
     }
 
     @Override
-    public void onCommandExecuted(boolean withSuccess) {
+    public void onCommandExecuted() {
         // TODO Auto-generated method stub
         isExecuting = false;
         ExecuteNext();
