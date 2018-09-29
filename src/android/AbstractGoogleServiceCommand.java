@@ -86,12 +86,12 @@ public abstract class AbstractGoogleServiceCommand implements
         connectToGoogleServices();
     }
 
-    protected void CommandExecuted(boolean success) {
+    protected void CommandExecuted() {
         // Turn off the in progress flag and disconnect the client
         connectionInProgress = false;
         mGoogleApiClient.disconnect();
         for (IGoogleServiceCommandListener listener : listeners) {
-            listener.onCommandExecuted(success);
+            listener.onCommandExecuted();
         }
     }
 
