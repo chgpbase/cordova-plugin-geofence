@@ -129,7 +129,7 @@ public class GeofencePlugin extends CordovaPlugin {
         Log.d(TAG, "GeofencePlugin execute action: " + action + " args: "
                 + args.toString());
         
-      //  executedAction = new Action(action, args, callbackContext);
+        executedAction = new Action(action, args, callbackContext);
       //  cordova.getThreadPool().execute(new Runnable() {
 //	    public void run() {
         if (action.equals("addOrUpdate")) {
@@ -151,19 +151,17 @@ public class GeofencePlugin extends CordovaPlugin {
         } else if (action.equals("removeAll")) {
             geoNotificationManager.removeAllGeoNotifications(callbackContext);
         } else if (action.equals("getWatched")) {
-            List<GeoNotification> geoNotifications = geoNotificationManager
-                    .getWatched();
+            List<GeoNotification> geoNotifications = geoNotificationManager.getWatched();
             callbackContext.success(Gson.get().toJson(geoNotifications));
         } else if (action.equals("initialize")) {
             initialize(callbackContext);
         } else if (action.equals("deviceReady")) {
             deviceReady();
-            callbackContext.success();
+//            callbackContext.success();
         } else {
 	    return true;
-	}
-      ///     }
-      ///  });
+        }
+
         return true;
     }
 
@@ -208,7 +206,7 @@ public class GeofencePlugin extends CordovaPlugin {
                 Log.d(TAG, "No notifications clicked.");
             } else {
                 webView.sendJavascript(js);
-                launcherIntent.removeExtra("geofence.notification.data");
+//                launcherIntent.removeExtra("geofence.notification.data");
             }
         }
     }

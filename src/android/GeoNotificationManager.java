@@ -17,9 +17,7 @@ import java.util.List;
 public class GeoNotificationManager {
     private Context context;
     private GeoNotificationStore geoNotificationStore;
-    //private LocationClient locationClient;
     private Logger logger;
-    private boolean connectionInProgress = false;
     private List<Geofence> geoFences;
     private PendingIntent pendingIntent;
     private GoogleServiceCommandExecutor googleServiceCommandExecutor;
@@ -57,11 +55,9 @@ public class GeoNotificationManager {
     }
 
     private boolean areGoogleServicesAvailable() {
-        // Check that Google Play services is available
-        int resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context);
-//        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
-
-        // If Google Play services is available
+        GoogleApiAvailability api = GoogleApiAvailability.getInstance();
+        int resultCode = api.isGooglePlayServicesAvailable(context);
+        
         if (ConnectionResult.SUCCESS == resultCode) {
             return true;
         } else {
@@ -70,50 +66,25 @@ public class GeoNotificationManager {
     }
 
     public void addGeoNotifications(List<GeoNotification> geoNotifications,
-            final CallbackContext callback) {
+            							final CallbackContext callback) {
         List<Geofence> newGeofences = new ArrayList<Geofence>();
         for (GeoNotification geo : geoNotifications) {
+            geoNotificationStore.setGeoNotification(geo);
             newGeofences.add(geo.toGeofence());
         }
         AddGeofenceCommand geoFenceCmd = new AddGeofenceCommand(context,
                 pendingIntent, newGeofences);
 
-        geoFenceCmd.addListener(new AddGeofenceCommandListener(geoNotifications, geoNotificationStore, callback));
-
-        googleServiceCommandExecutor.QueueToExecute(geoFenceCmd);
-    }
-
-    private class AddGeofenceCommandListener implements IGoogleServiceCommandListener {
-
-        private List<GeoNotification> geoNotifications;
-        private GeoNotificationStore geoNotificationStore;
-        private CallbackContext callback;
-
-        public AddGeofenceCommandListener(List<GeoNotification> geoNotifications, GeoNotificationStore geoNotificationStore, CallbackContext callback) {
-            this.geoNotifications = geoNotifications;
-            this.geoNotificationStore = geoNotificationStore;
-            this.callback = callback;
-        }
-
-        @Override
-        public void onCommandExecuted(boolean withSuccess) {
-
-            if (withSuccess) {
-
-                // Save into database
-                for (GeoNotification geoNotification : geoNotifications) {
-                    geoNotificationStore.setGeoNotification(geoNotification);
-                }
-                if (callback != null) {
+        if (callback != null) {
+            geoFenceCmd.addListener(new IGoogleServiceCommandListener() {
+                @Override
+                public void onCommandExecuted() {
                     callback.success();
                 }
-
-            } else {
-                if (callback != null) {
-                    callback.error("Failed to add geofence");
-                }
-            }
+            });
         }
+
+        googleServiceCommandExecutor.QueueToExecute(geoFenceCmd);
     }
 
     public void removeGeoNotification(String id, final CallbackContext callback) {
@@ -128,19 +99,14 @@ public class GeoNotificationManager {
         if (callback != null) {
             cmd.addListener(new IGoogleServiceCommandListener() {
                 @Override
-                public void onCommandExecuted(boolean withSuccess) {
-                    if(withSuccess) {
-                        for (String id : ids) {
-                            geoNotificationStore.remove(id);
-                        }
-                        callback.success();
-                    } else {
-                        callback.error("Failed to remove geofence.");
-                    }
+                public void onCommandExecuted() {
+                    callback.success();
                 }
             });
         }
-
+        for (String id : ids) {
+            geoNotificationStore.remove(id);
+        }
         googleServiceCommandExecutor.QueueToExecute(cmd);
     }
 
