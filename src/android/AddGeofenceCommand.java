@@ -43,7 +43,7 @@ public class AddGeofenceCommand extends AbstractGoogleServiceCommand{
                         }
                     });
             } catch (Exception exception) {
-                logger.log("Adding geofence failed");
+                logger.log(Log.DEBUG,"Adding geofence failed");
                 CommandExecuted();
             }
         }
