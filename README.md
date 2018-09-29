@@ -96,6 +96,9 @@ window.geofence.addOrUpdate({
         data:           Object,  //Custom object associated with notification
         dateStart:      Date, // Initial Date to start dispatch events of a Geofence - Optiona parameter
         dateEnd:        Date, // End Date to stop dispatch events of a Geofence - Optiona parameter
+        timeStart:      Time, // Initial Time to start dispatch events of a Geofence - Optiona parameter
+        timeEnd:        Time, // End Time to stop dispatch events of a Geofence - Optiona parameter
+        scenarioDayType: [Integer] //Optional scenario day type: 1:ALL DATE, 2:BETWEEN_TWO_DATES, 3:SATURDAY_AND_SUNDAY, 4:FRIDAY_AND_SATURDAY, 5:MONDAY_TO_FRIDAY, 6:SUNDAY_TO_TUESDAY, 7:MONDAY ... 13:SUNDAY
         happensOnce:    Boolean,  // only show a notification once - Default value false
     }
 }).then(function () {
