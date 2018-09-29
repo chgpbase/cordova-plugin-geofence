@@ -302,7 +302,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
 //                        logger.log(Log.DEBUG, "Geofence Removed");
 //                    }
 //                });
-                cmd.addListener(new IGoogleServiceCommandListener());
+//                cmd.addListener(new IGoogleServiceCommandListener);
                 GoogleServiceCommandExecutor googleServiceCommandExecutor = new GoogleServiceCommandExecutor();
                 googleServiceCommandExecutor.QueueToExecute(cmd);
             }
