@@ -207,7 +207,8 @@ public class ReceiveTransitionsIntentService extends IntentService {
                 logger.log(Log.DEBUG, "validateTimeInterval - scenarioDay(2)-BETWEEN_TWO_DATES");
 
                 //formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                //formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                formatter = new SimpleDateFormat("yyyy-MM-dd");
                 try {
                     dateStart = formatter.parse(timestampStart);
                 } catch (ParseException e) {
