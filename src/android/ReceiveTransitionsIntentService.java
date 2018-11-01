@@ -287,7 +287,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
                 //     dateEnd = new Date();
                 // }
                 logger.log(Log.DEBUG, "validateTimeInterval - scenarioTime check");
-                showNotification = dateIsBetweenIntervalDate(dateNow, timeMin, timeMax);
+                if (timeMin!=null && timeMax!=null ) showNotification = dateIsBetweenIntervalDate(dateNow, timeMin, timeMax);
             }
 
             if(showNotification && !notificationShowed && happensOnce) {
