@@ -49,6 +49,8 @@
 	    
         <framework src="com.google.android.gms:play-services-location:+" />
 	<framework src="com.google.code.gson:gson:+" />
+		
+       <framework src="src/android/geofence-plugin.gradle" custom="true" type="gradleReference"/>
 
         <config-file target="config.xml" parent="/*">
             <feature name="GeofencePlugin">
