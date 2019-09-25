@@ -49,6 +49,7 @@
         <source-file src="src/android/RemoveGeofenceCommand.java" target-dir="src/com/cowbell/cordova/geofence" />
 	    
         <framework src="com.google.android.gms:play-services-location:+" />
+	<framework src="com.android.support:support-compat:+" />
 	<framework src="com.google.code.gson:gson:+" />
 		
        <config-file target="config.xml" parent="/*">
