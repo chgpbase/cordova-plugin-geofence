@@ -8,8 +8,10 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 //import android.support.v4.app.NotificationCompat;
-import android.support.v4.media.app.NotificationCompat
-import android.support.v4.app.TaskStackBuilder;
+//import android.support.v4.media.app.NotificationCompat
+//import android.support.v4.app.TaskStackBuilder;
+import android.support.v7.app.NotificationCompat;
+import android.support.v7.app.TaskStackBuilder;
 import android.util.Log;
 
 public class GeoNotificationNotifier {
